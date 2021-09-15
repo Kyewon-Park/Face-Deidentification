@@ -220,7 +220,8 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
 
                 print(coords_list)
                 # print(f"im0.shape = {im0.shape}")
-                # print(f"im0 = {im0}")
+
+                #case1 #######################################     
                 noise_original = cv2.imread('noise.png')
                 #원본이미지의 얼굴부분을 노이즈로 바꿈
                 for coord in coords_list: #각 얼굴마다 행함
@@ -230,6 +231,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                     encrypted = cv2.addWeighted(face, 0.1, noise, 0.9, 0.0)
                     im0[coord[1]:coord[3],coord[0]:coord[2]]=encrypted
                 cv2.imshow("after",im0)
+                ##############################################    
                 
 
                          
