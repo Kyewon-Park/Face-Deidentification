@@ -7,19 +7,17 @@
 # 위치 [100 100 100 100]
 
 import cv2
-import random
 import numpy as np
 
-img1 = cv2.imread('dog.jpg')
-noise = cv2.imread('noise.png')
-img2 = noise[0:177,0:284]
+img1 = cv2.imread('D:\\Face-Deidentification\\yolov5-master\\dog.jpg')
+noise = cv2.imread('D:\\Face-Deidentification\\yolov5-master\\noise.png')
+noise_cut = noise[0:177,0:284]
 cv2.imshow("img1",img1)
-cv2.imshow("img2",img2)
+added = cv2.addWeighted(img1, 0.3, noise_cut, 0.7, 0.0)
 
-added = cv2.addWeighted(img1, 0.2, img2, 0.8, 0.0)
-added2 = cv2.addWeighted(img1, 0.1, img2, 0.9, 0.0)
-cv2.imshow("added2",added2)
-
+noise_part = added[50:127,60:140] #합성 이미지 받아서 노이즈 잘라냄=noise_part
+img1[50:127,60:140]=noise_part
+cv2.imshow("after",img1)
 
 cv2.waitKey(0)
 

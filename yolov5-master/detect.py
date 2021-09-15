@@ -212,8 +212,8 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                         print(f'xyxy={xyxy}')
                         coords=[] # Box coords of person
                         for indc in range(4):
-                            coords.append(xyxy[indc].tolist())
-                        coords_list.append(coords)
+                            coords.append(xyxy[indc].tolist()) 
+                        coords_list.append(coords) #얼굴 좌표들을 담은 리스트
                         ########################
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
@@ -221,13 +221,17 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 print(coords_list)
                 # print(f"im0.shape = {im0.shape}")
                 # print(f"im0 = {im0}")
-                noise_big = cv2.imread('noise.png')
-                for coord in coords_list:
+                noise_original = cv2.imread('noise.png')
+                #원본이미지의 얼굴부분을 노이즈로 바꿈
+                for coord in coords_list: #각 얼굴마다 행함
                     coord=list(map(int,coord))
-                    noise = noise_big[coord[0]:coord[2], coord[1]:coord[3]] #노이즈 부분
-                    face = im0[coord[0]:coord[2], coord[1]:coord[3]] #얼굴 부분
+                    noise = noise_original[coord[1]:coord[3],coord[0]:coord[2]] #노이즈 부분
+                    face = im0[coord[1]:coord[3],coord[0]:coord[2]] #얼굴 부분
                     encrypted = cv2.addWeighted(face, 0.1, noise, 0.9, 0.0)
-                    cv2.copyTo(encrypted,)
+                    im0[coord[1]:coord[3],coord[0]:coord[2]]=encrypted
+                cv2.imshow("after",im0)
+                
+
                          
                 
            
