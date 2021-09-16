@@ -23,7 +23,7 @@ from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, colorstr, non_max_suppression, \
     apply_classifier, scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path, save_one_box
-from utils.plots import colors, plot_one_box
+from utils.plots import colors, kye_encrypt, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_sync
 
 
@@ -121,13 +121,6 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
         model(torch.zeros(1, 3, *imgsz).to(device).type_as(next(model.parameters())))  # run once
     t0 = time.time()
     for path, img, im0s, vid_cap in dataset:
-        
-        #####################!!!!!!!!!!!!!
-        # print(f"img={img}")     
-        # print(f"img.shape = {img.shape}")
-        #print(f"im0s={im0s}")
-        ###################!!!!!!!!!!!!!!!
-        
         if onnx:
             img = img.astype('float32')
         else:
@@ -183,7 +176,11 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
 
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # img.jpg
-            txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
+            # txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
+            ############
+            txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'{frame}')  # img.txt
+            
+
             s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             imc = im0.copy() if save_crop else im0  # for save_crop
@@ -198,16 +195,16 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                 # Write results
                 coords_list=[] #list of coords of people
                 for *xyxy, conf, cls in reversed(det):
-                    if save_txt:  # Write to file
-                        xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                        line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
-                        with open(txt_path + '.txt', 'a') as f:
-                            f.write(('%g ' * len(line)).rstrip() % line + '\n') ##좌표
+                    # if save_txt:  # Write to file
+                    #     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
+                    #     line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
+                    #     with open(txt_path + '.txt', 'a') as f:
+                    #         f.write(('%g ' * len(line)).rstrip() % line + '\n') ##좌표
 
                     if save_img or save_crop or view_img:  # Add bbox to image
                         c = int(cls)  # integer class
                         label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
-                        im0 = plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_width=line_thickness) # 위에 결계상자 그리기
+                        #im0 = plot_one_box(xyxy, im0, label=label, color=colors(c, True), line_width=line_thickness) # 위에 결계상자 그리기
                         #######################
                         print(f'xyxy={xyxy}')
                         coords=[] # Box coords of person
@@ -218,9 +215,20 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
 
-                print(coords_list)
-                # print(f"im0.shape = {im0.shape}")
-                # print(f"im0 = {im0}")
+
+                ############################
+                    #coordlist 파일로 저장
+                    if save_txt:  # Write to file
+                        line = (cls, *xyxy)
+                        with open(txt_path + '.txt', 'a') as f:
+                            f.write(('%g ' * len(line)).rstrip() % line + '\n') ##좌표
+                    
+
+
+                #시간 계산 
+                # start_time = time.time()
+
+                print(coords_list) #coord[1]:coord[3],coord[0]:coord[2]
                 noise_original = cv2.imread('noise.png')
                 #원본이미지의 얼굴부분을 노이즈로 바꿈
                 for coord in coords_list: #각 얼굴마다 행함
@@ -229,12 +237,9 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                     face = im0[coord[1]:coord[3],coord[0]:coord[2]] #얼굴 부분
                     encrypted = cv2.addWeighted(face, 0.1, noise, 0.9, 0.0)
                     im0[coord[1]:coord[3],coord[0]:coord[2]]=encrypted
-                cv2.imshow("after",im0)
-                
 
-                         
-                
-           
+                # print("--- %s seconds ---" % (time.time() - start_time))
+
 
 
             # Print time (inference + NMS)
