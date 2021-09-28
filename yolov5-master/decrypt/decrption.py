@@ -1,6 +1,7 @@
 import cv2
 import glob
 import os
+import numpy as np
 
 script_dir = os.path.dirname(__file__)
 #텍스트파일 읽기
@@ -14,10 +15,18 @@ noise_original = cv2.imread('noise.png') # cd decrypt 후 사용
 
 count_in_list = 0
 frame_count=0
+
+#사진 저장 변수
+fourcc = cv2.VideoWriter_fourcc(*'DIVX')
+w = int(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH))
+h = int(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+fps = vidcap.get(cv2.CAP_PROP_FPS)
+out = cv2.VideoWriter('output.avi', fourcc, fps, (w, h))
+
 while vidcap.isOpened():
     #프레임 하나 당 텍스트 파일 하나 꺼내서 읽어 수정 
     success, frame = vidcap.read()    
-    #fps, w, h = vidcap.get(cv2.CAP_PROP_FPS), frame.shape[1], frame.shape[0]
+    # fps, w, h = vidcap.get(cv2.CAP_PROP_FPS), frame.shape[1], frame.shape[0]
     if not success:
         print("video ends")
         break
@@ -46,7 +55,9 @@ while vidcap.isOpened():
             noise = noise_original[coord[1]:coord[3],coord[0]:coord[2]] #노이즈 부분
             encrypted_region = frame[coord[1]:coord[3],coord[0]:coord[2]] #얼굴 부분            
             #encrypted_region에서 noise 9/10 밝기값 뺌
-            noise = noise*0.9                 
+            noise = noise*0.9   
+            noise=np.trunc(noise)
+
             print(f"encrypted_region = {encrypted_region[0][0]}")
             print(f"noise = {noise[0][0]}")
             faint_face= encrypted_region-noise                   
@@ -55,9 +66,13 @@ while vidcap.isOpened():
             #10배를 곱함
             face = faint_face*10
             frame[coord[1]:coord[3],coord[0]:coord[2]]=face
+
+    out.write(frame)
     cv2.imshow("after",frame)
-    cv2.waitKey(0)
-    
+    cv2.waitKey(1)
+
     count_in_list += 1
     frame_count += 1
 
+vidcap.release()
+out.release()
