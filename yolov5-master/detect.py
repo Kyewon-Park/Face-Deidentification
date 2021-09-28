@@ -238,9 +238,9 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                     print(f"face = {face[0][0]}")
                     noise=noise*0.9
                     print(f"nosie= {noise[0][0]}")
-                    
                     encrypted=face+noise
                     print(f"enc = {encrypted[0][0]}")
+                    encrypted = np.ceil(encrypted)
                     # encrypted = cv2.addWeighted(face, 0.1, noise, 0.9, 0.0)
                     im0[coord[1]:coord[3],coord[0]:coord[2]]=encrypted
                     
@@ -273,8 +273,12 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                             fps, w, h = 30, im0.shape[1], im0.shape[0]
                             save_path += '.avi'
                             # save_path += '.mp4'
-                        vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'png'), fps, (w, h))
-                        # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
+                        # 알맞은 코덱 설치 후 실행함
+                        # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'xvid'), fps, (w, h)) #x
+                        # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'ffv1'), fps, (w, h)) #o
+                        vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'hfyu'), fps, (w, h)) #o
+                        # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'divx'), fps, (w, h)) #x
+                        # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h)) #x
                     vid_writer[i].write(im0)
 
     if save_txt or save_img:
@@ -296,7 +300,7 @@ def parse_opt():
     parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
     parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-    parser.add_argument('--view-img', action='store_true', help='show results')
+    parser.add_argument('--view-img', action='store_true', help='show results')  
     parser.add_argument('--save-txt', action='store_true', help='save results to *.txt')
     parser.add_argument('--save-conf', action='store_true', help='save confidences in --save-txt labels')
     parser.add_argument('--save-crop', action='store_true', help='save cropped prediction boxes')
