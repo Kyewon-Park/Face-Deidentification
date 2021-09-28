@@ -23,7 +23,7 @@ from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, colorstr, non_max_suppression, \
     apply_classifier, scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path, save_one_box
-from utils.plots import colors, kye_encrypt, plot_one_box
+from utils.plots import colors, plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_sync
 
 
@@ -234,8 +234,16 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                     coord=list(map(int,coord))
                     noise = noise_original[coord[1]:coord[3],coord[0]:coord[2]] #노이즈 부분
                     face = im0[coord[1]:coord[3],coord[0]:coord[2]] #얼굴 부분
-                    encrypted = cv2.addWeighted(face, 0.1, noise, 0.9, 0.0)
+                    face=face*0.1
+                    print(f"face = {face[0][0]}")
+                    noise=noise*0.9
+                    print(f"nosie= {noise[0][0]}")
+                    
+                    encrypted=face+noise
+                    print(f"enc = {encrypted[0][0]}")
+                    # encrypted = cv2.addWeighted(face, 0.1, noise, 0.9, 0.0)
                     im0[coord[1]:coord[3],coord[0]:coord[2]]=encrypted
+                    
 
                 # print("--- %s seconds ---" % (time.time() - start_time))
 
@@ -263,8 +271,10 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                             h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                         else:  # stream
                             fps, w, h = 30, im0.shape[1], im0.shape[0]
-                            save_path += '.mp4'
-                        vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
+                            save_path += '.avi'
+                            # save_path += '.mp4'
+                        vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'png'), fps, (w, h))
+                        # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
                     vid_writer[i].write(im0)
 
     if save_txt or save_img:
