@@ -230,20 +230,33 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
 
                 noise_original = cv2.imread('noise.png')
                 #원본이미지의 얼굴부분을 노이즈로 바꿈
+                # for coord in coords_list: #각 얼굴마다 행함
+                #     coord=list(map(int,coord))
+                #     noise = noise_original[coord[1]:coord[3],coord[0]:coord[2]] #노이즈 부분
+                #     face = im0[coord[1]:coord[3],coord[0]:coord[2]] #얼굴 부분
+                #     face=face*0.1
+                #     print(f"face = {face[0][0]}")
+                #     noise=noise*0.9
+                #     print(f"nosie= {noise[0][0]}")
+                #     encrypted=face+noise
+                #     print(f"enc = {encrypted[0][0]}")
+                #     encrypted = np.ceil(encrypted)
+                #     # encrypted = cv2.addWeighted(face, 0.1, noise, 0.9, 0.0)
+                #     im0[coord[1]:coord[3],coord[0]:coord[2]]=encrypted
+
                 for coord in coords_list: #각 얼굴마다 행함
                     coord=list(map(int,coord))
                     noise = noise_original[coord[1]:coord[3],coord[0]:coord[2]] #노이즈 부분
                     face = im0[coord[1]:coord[3],coord[0]:coord[2]] #얼굴 부분
-                    face=face*0.1
-                    print(f"face = {face[0][0]}")
-                    noise=noise*0.9
-                    print(f"nosie= {noise[0][0]}")
-                    encrypted=face+noise
-                    print(f"enc = {encrypted[0][0]}")
-                    encrypted = np.ceil(encrypted)
-                    # encrypted = cv2.addWeighted(face, 0.1, noise, 0.9, 0.0)
-                    im0[coord[1]:coord[3],coord[0]:coord[2]]=encrypted
-                    
+                    xored=face
+                    for h in range(len(noise)):
+                        for j in range(len(noise[0])):
+                            for k in range(3):
+                                xored[h][j][k]=face[h][j][k]^noise[h][j][k]
+                                
+    
+                    im0[coord[1]:coord[3],coord[0]:coord[2]]=xored
+                        
 
                 # print("--- %s seconds ---" % (time.time() - start_time))
 
@@ -277,6 +290,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                         # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'xvid'), fps, (w, h)) #x
                         # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'ffv1'), fps, (w, h)) #o
                         vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'hfyu'), fps, (w, h)) #o
+                        # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'h264'), fps, (w, h)) #o
                         # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'divx'), fps, (w, h)) #x
                         # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h)) #x
                     vid_writer[i].write(im0)
