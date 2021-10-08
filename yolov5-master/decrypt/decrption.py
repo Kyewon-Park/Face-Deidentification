@@ -17,7 +17,7 @@ count_in_list = 0
 frame_count=0
 
 #사진 저장 변수
-fourcc = cv2.VideoWriter_fourcc(*'DIVX')
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 w = int(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH))
 h = int(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 fps = vidcap.get(cv2.CAP_PROP_FPS)
@@ -54,18 +54,28 @@ while vidcap.isOpened():
             print(f"coord = {coord}")
             noise = noise_original[coord[1]:coord[3],coord[0]:coord[2]] #노이즈 부분
             encrypted_region = frame[coord[1]:coord[3],coord[0]:coord[2]] #얼굴 부분            
-            #encrypted_region에서 noise 9/10 밝기값 뺌
-            noise = noise*0.9   
-            noise=np.trunc(noise)
-
-            print(f"encrypted_region = {encrypted_region[0][0]}")
-            print(f"noise = {noise[0][0]}")
-            faint_face= encrypted_region-noise                   
-            print(f"faint_face = {faint_face[0][0]}")
             
-            #10배를 곱함
-            face = faint_face*10
-            frame[coord[1]:coord[3],coord[0]:coord[2]]=face
+            # #encrypted_region에서 noise 9/10 밝기값 뺌
+            # noise = noise*0.9   
+            # noise=np.trunc(noise)
+
+            # print(f"encrypted_region = {encrypted_region[0][0]}")
+            # print(f"noise = {noise[0][0]}")
+            # faint_face= encrypted_region-noise                   
+            # print(f"faint_face = {faint_face[0][0]}")
+            
+            # #10배를 곱함
+            # face = faint_face*10
+
+            #XOR
+            xored=encrypted_region #배열 초기화
+            for h in range(len(noise)):
+                for j in range(len(noise[0])):
+                    for k in range(3):
+                        xored[h][j][k]=encrypted_region[h][j][k]^noise[h][j][k]
+
+
+            frame[coord[1]:coord[3],coord[0]:coord[2]]=xored
 
     out.write(frame)
     cv2.imshow("after",frame)
