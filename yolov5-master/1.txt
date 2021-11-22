@@ -1,46 +1,5 @@
-python detect.py --weight best.pt --source 1.avi --view-img --save-txt --save-conf
-
-
+#동영상 생성 및 비식별화
 python detect.py --weight best.pt --source 0 --view-img --save-txt 
 
-
-1################################
-
-rbg끼리 바꾸기 => 3*2-1 = 6-1 가지
-13512425152... len(32) 반복
-0 b g r (x)
-1 r g b 
-2 r b g
-3 g r b
-4 g b r
-5 b r g
-
-+   알파..
-
-2#################################
-
-1/2 + 1/2
-4+3 => 3.5 
-
-if  올림: 0.5+ => 4 ; 복원 => 8-3 = 5
-결론
-if 홀수: 
-[[
-[표시(1), 0, 0]
- 	    ]]
-
-[[310.0, 98.0, 461.0, 302.0]]
-
-52  +  29 => 5.2 * 1 + 2.9 * 9 = 31.3
-
-31 - 2.9*9 = 4.9 * 10 = 49 
-
-
-
-
-
-
-
-
-
-
+#갖고있는 동영상 비식별화
+python detect.py --weight best.pt --source 1.avi --view-img --save-txt --save-conf
