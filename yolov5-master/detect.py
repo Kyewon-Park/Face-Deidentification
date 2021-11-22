@@ -215,7 +215,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
 
-                #case1 #######################################     
+                    #case1 #######################################     
                     #coordlist 파일로 저장
                     if save_txt:  # Write to file
                         line = (cls, *xyxy)
