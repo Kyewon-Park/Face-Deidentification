@@ -283,7 +283,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                             w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
                             h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
                         else:  # stream
-                            fps, w, h = 30, im0.shape[1], im0.shape[0]
+                            fps, w, h = 8, im0.shape[1], im0.shape[0] #10 : 0.025s당 하나의 프레임 찍을때 1:1
                             save_path += '.avi'
                             # save_path += '.mp4'
                         # 알맞은 코덱 설치 후 실행함
