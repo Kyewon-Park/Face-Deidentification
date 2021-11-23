@@ -290,7 +290,7 @@ def run(weights='yolov5s.pt',  # model.pt path(s)
                         # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'xvid'), fps, (w, h)) #x
                         # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'ffv1'), fps, (w, h)) #o
                         vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'hfyu'), fps, (w, h)) #o
-                        # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'h264'), fps, (w, h)) #o
+                        # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'h264'), fps, (w, h)) #
                         # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'divx'), fps, (w, h)) #x
                         # vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h)) #x
                     vid_writer[i].write(im0)
