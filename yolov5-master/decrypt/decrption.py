@@ -20,7 +20,8 @@ frame_count=0
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 w = int(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH))
 h = int(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-fps = vidcap.get(cv2.CAP_PROP_FPS)
+# fps = vidcap.get(cv2.CAP_PROP_FPS)
+fps = 20
 out = cv2.VideoWriter(script_dir +"/output.avi", fourcc, fps, (w, h))
 
 while vidcap.isOpened():
