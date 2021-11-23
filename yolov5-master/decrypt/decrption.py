@@ -8,7 +8,7 @@ script_dir = os.path.dirname(__file__)
 rel_path="/labels/*.txt"
 txt_files = sorted(glob.glob(script_dir + rel_path),key=len)
 #영상파일 읽기
-vidcap = cv2.VideoCapture(script_dir +"/0.avi")
+vidcap = cv2.VideoCapture(script_dir +"/hfyu1.avi")
 # vidcap = cv2.VideoCapture(script_dir +"/0.mp4")
 #노이즈 사진 읽기
 noise_original = cv2.imread('noise.png') # cd decrypt 후 사용
@@ -21,14 +21,14 @@ fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 w = int(vidcap.get(cv2.CAP_PROP_FRAME_WIDTH))
 h = int(vidcap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 fps = vidcap.get(cv2.CAP_PROP_FPS)
-out = cv2.VideoWriter('output.avi', fourcc, fps, (w, h))
+out = cv2.VideoWriter(script_dir +"/output.avi", fourcc, fps, (w, h))
 
 while vidcap.isOpened():
     #프레임 하나 당 텍스트 파일 하나 꺼내서 읽어 수정 
     success, frame = vidcap.read()    
     # fps, w, h = vidcap.get(cv2.CAP_PROP_FPS), frame.shape[1], frame.shape[0]
     if not success:
-        print("video ends")
+        print("read fail - video ends")
         break
     #텍스트 파일 꺼내서 앞에 파일이름 숫자 받음
     file_name = txt_files[count_in_list]
@@ -41,11 +41,20 @@ while vidcap.isOpened():
     if file_num != frame_count:
         for i in range(file_num - frame_count):
             print(f"pass frame {i} times")
-            frame_count+=1
-            success, frame = vidcap.read()
-            cv2.imshow("pass",frame)
-            cv2.waitKey(0)      
             
+            out.write(frame)
+            success, frame = vidcap.read()
+            frame_count+=1             
+            
+            if file_num==frame_count:
+                print(f"count is same - break: {file_num}")
+                break
+                
+            cv2.imshow("after",frame)
+            cv2.waitKey(1)
+            continue
+            ########
+        
         print(f"after pass : frame_count = {frame_count}")
         
     with open(file_name, "r") as fd:
@@ -73,8 +82,6 @@ while vidcap.isOpened():
                 for j in range(len(noise[0])):
                     for k in range(3):
                         xored[h][j][k]=encrypted_region[h][j][k]^noise[h][j][k]
-
-
             frame[coord[1]:coord[3],coord[0]:coord[2]]=xored
 
     out.write(frame)
